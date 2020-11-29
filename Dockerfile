@@ -3,6 +3,8 @@ FROM debian:buster
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Moscow
 
+ENV PATH="$PATH:/opt/sonar-scanner/bin"
+
 RUN set -ex && \
     apt-get update && \
     apt-get -y upgrade && \
@@ -17,9 +19,15 @@ RUN set -ex && \
       jq \
       git \
       tree \
+      unzip \
       bash-completion \
       software-properties-common \
       openssl && \
+    wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.5.0.2216-linux.zip && \
+    unzip -q sonar-scanner-cli-*.zip && \
+    rm sonar-scanner-cli-*.zip && \
+    mv sonar-scanner-*-linux /opt/sonar-scanner && \
+    sonar-scanner -v && \
     curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
